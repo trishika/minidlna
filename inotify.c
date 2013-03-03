@@ -575,26 +575,6 @@ inotify_remove_file(const char * path)
 					sql_exec(db, "UPDATE PLAYLISTS set FOUND = (FOUND-1) where ID = %d",
 					         atoi(strrchr(result[i], '$') + 1));
 				}
-
-				children = sql_get_int_field(db, "SELECT count(*) from OBJECTS where PARENT_ID = '%s'", result[i]);
-				if( children < 0 )
-					continue;
-				if( children < 2 )
-				{
-					sql_exec(db, "DELETE from DETAILS where ID ="
-					             " (SELECT DETAIL_ID from OBJECTS where OBJECT_ID = '%s')", result[i]);
-					sql_exec(db, "DELETE from OBJECTS where OBJECT_ID = '%s'", result[i]);
-
-					ptr = strrchr(result[i], '$');
-					if( ptr )
-						*ptr = '\0';
-					if( sql_get_int_field(db, "SELECT count(*) from OBJECTS where PARENT_ID = '%s'", result[i]) == 0 )
-					{
-						sql_exec(db, "DELETE from DETAILS where ID ="
-						             " (SELECT DETAIL_ID from OBJECTS where OBJECT_ID = '%s')", result[i]);
-						sql_exec(db, "DELETE from OBJECTS where OBJECT_ID = '%s'", result[i]);
-					}
-				}
 			}
 			sqlite3_free_table(result);
 		}
